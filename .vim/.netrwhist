@@ -1,0 +1,9 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_1='/Users/bionjohnson/Documents/CodeFellows/venue-critic'
+let g:netrw_dirhist_2='/Users/bionjohnson/dev/shark_attack'
+let g:netrw_dirhist_3='/Users/bionjohnson/dev/familyrecipebox'
+let g:netrw_dirhist_4='/Users/bionjohnson/dev/shark_attack'
+let g:netrw_dirhist_5='/Users/bionjohnson/dev/familyrecipebox'
+let g:netrw_dirhist_6='/Users/bionjohnson/Documents/lp/ruby/bion'
+let g:netrw_dirhist_7='/Users/bionjohnson/dev/shark_attack'
