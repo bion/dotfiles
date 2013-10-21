@@ -9,7 +9,8 @@ cd $dir
 for file in $files; do
   echo "Creating symlinks to $file in home directory."
   ln -s $dir/$file ~/.$file
-  source ~/.$file
 done
 
+chsh -s /bin/zsh $EUID
+source ~/.zshrc
 vi -c "BundleInstall"

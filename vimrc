@@ -1,6 +1,18 @@
-execute pathogen#infect()
-call pathogen#helptags()
-call pathogen#incubate()
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+Bundle 'gmarik/vundle'
+
+Bundle 'tpope/vim-rails.git'
+Bundle 'kien/ctrlp.vim'
+Bundle 'scrooloose/nerdtree'
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'tpope/vim-vividchalk'
+Bundle 'tpope/vim-markdown'
+Bundle 'airblade/vim-gitgutter'
 
 color vividchalk
 
@@ -19,9 +31,6 @@ set expandtab
 set noswapfile
 set nobackup
 
-" boooooooo vi! 
-set nocompatible
-
 syntax on
 
 " KEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEYBOARD MAPPINGS
@@ -35,16 +44,14 @@ nnoremap <leader>n :NERDTreeClose<CR>:NERDTreeToggle<CR>
 nnoremap <leader>m :NERDTreeClose<CR>:NERDTreeFind<CR>
 nnoremap <leader>N :NERDTreeClose<CR>
 
-" flush commandT
-nnoremap <leader>f :CommandTFlush<CR>
+nnoremap <leader>t :CtrlP<CR>
 
-" toggle those <-------- things
+" toggle those numbers
 nnoremap <leader>5 :NumbersToggle<CR>
 
 " fast escape
 inoremap jk <esc>
 
-filetype on
 filetype plugin on
 filetype indent on
 

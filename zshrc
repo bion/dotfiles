@@ -1,9 +1,7 @@
 # Screw you, autocorrect.
 unsetopt correct_all
 
-# fix postgres
-#
-# export PATH=/usr/local/bin:$PATH
+eval `direnv hook zsh`
 
 # OS X keys
 bindkey '\e[3~' delete-char
@@ -40,12 +38,15 @@ setopt prompt_subst
 
 source ~/.zsh/spectrum.zsh
 
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+export MANPATH="/opt/local/share/man:$MANPATH"
+
 git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || return
   echo "(${ref#refs/heads/})"
 }
 
-export PATH=/usr/local/share/npm/lib/node_modules/coffee-script/bin/:$PATH
+export PATH="/usr/local/share/npm/lib/node_modules/coffee-script/bin/:$PATH"
 
 # AWS toolkit config
 export AWS_RDS_HOME="/Users/bionjohnson/dev/RDSCli-1.14.001"
