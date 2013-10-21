@@ -6,6 +6,7 @@ call vundle#rc()
 
 Bundle 'gmarik/vundle'
 
+Bundle 'tpope/vim-vividchalk'
 Bundle 'tpope/vim-rails.git'
 Bundle 'kien/ctrlp.vim'
 Bundle 'scrooloose/nerdtree'
@@ -78,7 +79,7 @@ highlight Pmenu ctermbg=238 gui=bold
 
 " highlight weird chars
 set list
-set listchars=tab:▸\ ,trail:ـ,extends:➧,eol:¬
+" set listchars=tab:▸\ ,trail:ـ,extends:➧,eol:¬
 
 set linebreak
 

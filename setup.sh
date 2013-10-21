@@ -2,7 +2,7 @@
 # setup.sh
 
 dir=~/dotfiles
-files="bashrc vimrc vim zshrc"
+files="bashrc vimrc zsh vim zshrc"
 
 cd $dir
 

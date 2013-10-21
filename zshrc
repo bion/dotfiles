@@ -1,8 +1,6 @@
 # Screw you, autocorrect.
 unsetopt correct_all
 
-eval `direnv hook zsh`
-
 # OS X keys
 bindkey '\e[3~' delete-char
 bindkey '^R' history-incremental-search-backward

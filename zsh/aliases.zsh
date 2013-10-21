@@ -19,7 +19,7 @@ alias gz="cd ~/Documents/工作/"
 
 alias br="bin/rspec"
 
-alias vi="mvim"
+alias vi="vim"
 
 alias psgrep="ps aux | grep $1"
 
