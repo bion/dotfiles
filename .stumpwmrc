@@ -108,4 +108,4 @@
 (run-shell-command "socks-proxy")
 (firefox)
 (emacs)
-;; (emux)
+(sakura)
