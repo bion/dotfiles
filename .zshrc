@@ -62,10 +62,3 @@ else
 fi
 
 export ARCHFLAGS="-arch x86_64"
-
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-
-PATH=/home/bion/.rbenv/shims:/home/bion/.rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/bion/local/ruby-2.1.5/bin
-
-PATH=/home/bion/.rbenv/shims:/home/bion/.rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/bion/local/ruby-2.1.5/bin:/home/bion/bin
