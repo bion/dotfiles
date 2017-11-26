@@ -1,3 +1,12 @@
 [user]
-	email = bion@substantial.com
-	name = bion
+  email = bionjohnson@gmail.com
+  name = bion
+[alias]
+  minlog = log '--pretty=format:"%h %Cgreen%an%Creset %s"'
+[core]
+  editor = emacsclient
+  excludesfile = /Users/bion/.gitignore
+[push]
+  default = matching
+[status]
+  showUntrackedFiles = all
