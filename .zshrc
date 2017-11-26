@@ -7,39 +7,13 @@ export ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 ZSH_THEME="re5et"
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
 # Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
 # much, much faster.
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
@@ -49,9 +23,88 @@ plugins=(git)
 
 # User configuration
 
-export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+alias ff="open -a Firefox"
 
-export PATH="$PATH:/home/bion/bin"
+alias ll="l"
+alias lll="l"
+alias llll="l"
+alias lllll="l"
+alias llllll="l"
+alias lllllll="l"
+alias llllllll="l"
+alias lllllllll="l"
+alias llllllllll="l"
+alias lllllllllll="l"
+alias llllllllllll="l"
+alias lllllllllllll="l"
+alias llllllllllllll="l"
+alias lllllllllllllll="l"
+alias llllllllllllllll="l"
+alias lllllllllllllllll="l"
+alias llllllllllllllllll="l"
+alias lllllllllllllllllll="l"
+alias llllllllllllllllllll="l"
+alias lllllllllllllllllllll="l"
+alias llllllllllllllllllllll="l"
+alias lllllllllllllllllllllll="l"
+alias llllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+alias lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll="l"
+
+export PATH="/Users/bion/bin:$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 
 source $ZSH/oh-my-zsh.sh
 export LANG=en_US.UTF-8
@@ -60,7 +113,25 @@ export LANG=en_US.UTF-8
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
-  export EDITOR='emacs-23.4'
+  export EDITOR='emacsclient'
 fi
 
 export ARCHFLAGS="-arch x86_64"
+
+export PATH="$PATH:/Applications/SuperCollider/SuperCollider.app/Contents/Resources"
+export PATH="$PATH:/Applications/SuperCollider/SuperCollider.app/Contents/MacOS"
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
+
+export NVM_DIR="/Users/bion/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
+eval "$(direnv hook zsh)"
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+. /Users/bion/.asdf/asdf.sh
+. /Users/bion/.asdf/completions/asdf.bash
