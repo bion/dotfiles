@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+source "${BASH_SOURCE%/*}/shared.sh"
+
+function configure_ctags() {
+  symlink_dotfile ctags ~/.ctags
+}
+
+packages=(
+  chromedriver
+  ctags
+  phantomjs
+)
+
+dotheader "Setting up devtools..."
+
+brew_install_all "${packages[@]}"

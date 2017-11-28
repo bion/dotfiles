@@ -129,9 +129,11 @@ export NVM_DIR="/Users/bion/.nvm"
 
 eval "$(direnv hook zsh)"
 
+if [[ -f "/Users/bion/.secrets" ]]; then
+  source /Users/bion/.secrets
+fi
+
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 test -s "$HOME/.kiex/scripts/kiex" && source "$HOME/.kiex/scripts/kiex"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-. /Users/bion/.asdf/asdf.sh
-. /Users/bion/.asdf/completions/asdf.bash
