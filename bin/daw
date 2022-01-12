@@ -1,0 +1,51 @@
+#! /usr/bin/env bash
+
+set -e
+set -m
+set +x
+
+jackd -R -d alsa -d hw:PCH -p 512 &
+jackpid=$!
+
+jack_wait -w
+a2jmidid -e &
+
+gtk-launch cockos-reaper.desktop > /dev/null 2>&1 &
+
+emacsclient -e "(sclang-start)" > /dev/null 2>&1  &
+
+until lsof -i | grep -q scsynth; do
+    echo "Waiting for sc to boot..."
+    sleep 0.5
+done
+
+until jack_lsp | grep -q REAPER:in20; do
+    echo "Waiting for reaper to allocate input channels..."
+    sleep 0.5
+done
+
+echo Connecting scsynth to reaper...
+
+for i in {1..5}; do
+    jack_connect "SuperCollider:out_${i}" "REAPER:in${i}"
+done
+
+echo done
+
+# disown emacsclient
+disown %3
+
+# disown reaper
+disown %2
+
+function cleanup() {
+    emacsclient -e "(sclang-stop)" > /dev/null 2>&1 &
+    killall reaper
+    killall jackd
+}
+
+trap cleanup SIGINT
+
+# foreground jackd
+wait $jackpid
+

@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+
+set -e
+set +x
+
+# to view hardware devices
+echo "listing hardware devices, names in square brackets:"
+echo
+
+cat /proc/asound/cards

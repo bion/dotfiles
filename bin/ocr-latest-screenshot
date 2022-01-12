@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+set -euf
+
+source "${BASH_SOURCE%/*}/shared.sh"
+
+if is_linux; then
+    screenshot_dir=~/Pictures
+else
+    screenshot_dir=~/Desktop
+fi
+
+latest="$screenshot_dir/$(ls -Art $screenshot_dir | tail -n 1)"
+
+extract-text "$latest"

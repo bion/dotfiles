@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+set -euf -o pipefail
+
+input_file="$1"
+temp_file=$(mktemp)
+
+convert "$input_file" "$temp_file.tif"
+tesseract -l eng "$temp_file.tif" "$temp_file" &> /dev/null
+
+cat "$temp_file.txt"
+
+rm "$temp_file"
+rm "$temp_file.txt"
+rm "$temp_file.tif"
