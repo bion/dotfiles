@@ -55,7 +55,6 @@
 (global-set-key (kbd "M-N") 'md/duplicate-down)
 (global-set-key (kbd "M-|") 'toggle-window-split)
 (global-set-key (kbd "M-/") 'hippie-expand)
-(global-visual-line-mode t)
 
 ;; here are some additional functions/macros that could help you configure Doom:
 ;;
