@@ -1,0 +1,38 @@
+#! /usr/bin/env bash
+
+set -e -o pipefail
+
+readonly INPUT_WORDLIST_FILENAME="${1}"
+readonly OUTPUT_ANKI_FILENAME="${2}"
+
+if [[ ! -f "${INPUT_WORDLIST_FILENAME}" ]]; then
+  echo First arg must a wordlist filename 1>&2
+  exit 1
+fi
+
+if [[ "${OUTPUT_ANKI_FILENAME}" == "" ]]; then
+  echo Second arg must a output filename 1>&2
+  exit 1
+fi
+
+function get_definitions() {
+  definitions="$(echo ${1} | jq -r '.[].shortdef | @csv')"
+  return $?
+}
+
+for word_phrase in $(cat "${INPUT_WORDLIST_FILENAME}"); do
+  echo "${word_phrase}"
+
+  RESPONSE="$(dict "${word_phrase}")"
+
+  set +e
+  if ! get_definitions "${RESPONSE}"; then
+    continue
+  fi
+  set -e
+
+  definitions=$(echo $definitions | tr -d ';')
+  definitions=$(echo $definitions | tr -d '"')
+
+  echo -e "${word_phrase};${definitions}" >> "${OUTPUT_ANKI_FILENAME}"
+done

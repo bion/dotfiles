@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+set -e
+
+if [[ -v ${MERRIAM_WEBSTER_API_KEY} ]]; then
+  echo MERRIAM_WEBSTER_API_KEY not set 1>&2
+  exit 1
+fi
+
+readonly WORD="${1}"
+
+if [[ "${WORD}" = "" ]]; then
+  echo First arg must be a word to lookup 1>&2
+  exit 1
+fi
+
+readonly QUERY_URL="https://www.dictionaryapi.com/api/v3/references/collegiate/json/${WORD}?key=${MERRIAM_WEBSTER_API_KEY}"
+
+curl --silent --fail "${QUERY_URL}"
