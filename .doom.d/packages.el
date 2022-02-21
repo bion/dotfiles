@@ -50,3 +50,4 @@
 ;(unpin! t)
 
 (package! scala-mode)
+(package! move-dup)

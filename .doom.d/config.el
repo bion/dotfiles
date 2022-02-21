@@ -51,10 +51,17 @@
 (global-set-key (kbd "M-x") 'smex)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-(global-set-key (kbd "M-P") 'md/duplicate-up)
-(global-set-key (kbd "M-N") 'md/duplicate-down)
+
+(global-set-key (kbd "C-S-p") 'move-dup-move-lines-up)
+(global-set-key (kbd "M-P") 'move-dup-duplicate-up)
+(global-set-key (kbd "M-N") 'move-dup-duplicate-down)
+(global-set-key (kbd "C-S-n") 'move-dup-move-lines-down)
 (global-set-key (kbd "M-|") 'toggle-window-split)
+(global-set-key (kbd "C-S-j") (lambda () (interactive) (join-line -1)))
 (global-set-key (kbd "M-/") 'hippie-expand)
+
+(add-to-list 'auto-mode-alist '("\\.scd\\'" . sclang-mode))
+(add-to-list 'auto-mode-alist '("\\.sc\\'" . sclang-mode))
 
 ;; here are some additional functions/macros that could help you configure Doom:
 ;;
