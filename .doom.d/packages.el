@@ -51,3 +51,4 @@
 
 (package! scala-mode)
 (package! move-dup)
+(package! git-link)

@@ -59,9 +59,20 @@
 (global-set-key (kbd "M-|") 'toggle-window-split)
 (global-set-key (kbd "C-S-j") (lambda () (interactive) (join-line -1)))
 (global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "C-c g l") 'git-link)
 
 (add-to-list 'auto-mode-alist '("\\.scd\\'" . sclang-mode))
 (add-to-list 'auto-mode-alist '("\\.sc\\'" . sclang-mode))
+
+(defun endless/visit-pull-request-url ()
+  "Visit the current branch's PR on Github."
+  (interactive)
+  (browse-url (format "https://github.com/%s/pull/new/%s"
+                      (replace-regexp-in-string "\\`.+github\\.com:\\(.+\\)\\.git\\'" "\\1"
+                                                (magit-get "remote"
+                                                           (magit-get-push-remote)
+                                                           "url"))
+                      (magit-get-current-branch))))
 
 ;; here are some additional functions/macros that could help you configure Doom:
 ;;
