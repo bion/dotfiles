@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-dotheader() {
+dotgreen() {
   dotsay "@b@green[[$1]]"
-  echo
+}
+
+dotred() {
+  dotsay "@b@red[[$1]]"
 }
 
 dotsay() {

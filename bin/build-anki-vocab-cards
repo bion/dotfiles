@@ -2,6 +2,7 @@
 
 set -e -o pipefail
 
+readonly MAIN_ENTRY_URL_PREFIX="https://www.merriam-webster.com/dictionary"
 readonly INPUT_WORDLIST_FILENAME="${1}"
 readonly OUTPUT_ANKI_FILENAME="${2}"
 
@@ -33,6 +34,7 @@ for word_phrase in $(cat "${INPUT_WORDLIST_FILENAME}"); do
 
   definitions=$(echo $definitions | tr -d ';')
   definitions=$(echo $definitions | tr -d '"')
+  definitions="${definitions} -- ${MAIN_ENTRY_URL_PREFIX}/${word_phrase}"
 
   echo -e "${word_phrase};${definitions}" >> "${OUTPUT_ANKI_FILENAME}"
 done

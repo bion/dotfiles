@@ -1,0 +1,50 @@
+#! /usr/bin/env bash
+
+set -e
+
+pushd ~ > /dev/null
+
+source dotfiles/bin/shared.sh
+
+dotgreen "installing packages"
+packages=(git jq jackd tesseract-ocr Imagemagick build-essential ffmpeg firefox zsh tmux sqlite3 ripgrep fd-find emacs-gtk supercollider-emacs)
+for package in "${packages[@]}"; do
+  apt::install $package
+done
+
+dotgreen "linking doom config"
+file_stuff::link_files_to_dir dotfiles/.doom.d .doom.d
+
+dotgreen "installing doom"
+if stat .emacs.d/bin/doom > /dev/null 2>&1; then
+  dotsay "+ doom already intalled"
+else
+  git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
+  ~/.emacs.d/bin/doom install
+fi
+
+dotgreen "linking custom scripts"
+file_stuff::link_files_to_dir dotfiles/bin bin
+
+dotgreen "linking .zshrc"
+rm -rf .zshrc
+ln -s dotfiles/.zshrc .zshrc
+
+dotgreen "linking sclang startup file"
+rm -rf .config/SuperCollider/startup.scd
+ln -s "$(realpath dotfiles/sclang/startup.scd)" "$(realpath .config/SuperCollider/)"
+
+dotgreen "linking sclang extensions"
+file_stuff::link_files_to_dir \
+  dotfiles/sclang/extensions \
+  .local/share/SuperCollider/Extensions/custom
+
+dotgreen "checking for SC3Plugins"
+if ! stat .local/share/SuperCollider/Extensions/SC3plugins > /dev/null 2>&1; then
+  dotred "SC3Plugins not found in .local/share/SuperCollider/Extensions/ get them at https://github.com/supercollider/sc3-plugins#installation"
+fi
+
+dotgreen "Setting caps lock to control"
+dconf write /org/gnome/desktop/input-sources/xkb-options "['caps:ctrl_modifier']"
+
+popd > /dev/null

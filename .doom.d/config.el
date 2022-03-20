@@ -74,6 +74,17 @@
                                                            "url"))
                       (magit-get-current-branch))))
 
+(after! dired
+  (map! "M-p" 'dired-sclang-preview-soundfile))
+
+(defun dired-sclang-preview-soundfile ()
+  (interactive)
+  (sclang-preview-soundfile (dired-get-filename)))
+
+(defun sclang-preview-soundfile (path)
+  (let ((command (concat "~sampleBuffer.value(\"" path "\")")))
+    (sclang-eval-string command)))
+
 ;; here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one

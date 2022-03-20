@@ -4,15 +4,23 @@ set -e
 set -m
 set +x
 
-jackd -R -d alsa -d hw:PCH -p 512 &
+output_device="PCH"
+
+if cat /proc/asound/cards | grep -q Scarlett; then
+    output_device="USB"
+fi
+
+jackd -R -d alsa -d "hw:${output_device}" -p 512 &
+
 jackpid=$!
 
 jack_wait -w
 a2jmidid -e &
+a2jpid=$!
 
 gtk-launch cockos-reaper.desktop > /dev/null 2>&1 &
 
-emacsclient -e "(sclang-start)" > /dev/null 2>&1  &
+emacsclient -e "(sclang-start)" > /dev/null 2>&1 &
 
 until lsof -i | grep -q scsynth; do
     echo "Waiting for sc to boot..."
@@ -41,10 +49,16 @@ disown %2
 function cleanup() {
     emacsclient -e "(sclang-stop)" > /dev/null 2>&1 &
     killall reaper
-    killall jackd
+    kill $a2jpid
+    wait $a2jpid
+    kill $jackpid
+    wait $jackpid
 }
 
 trap cleanup SIGINT
+
+echo a2jpid $a2jpid
+echo jackpid $jackpid
 
 # foreground jackd
 wait $jackpid
