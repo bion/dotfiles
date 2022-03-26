@@ -38,14 +38,16 @@ dotgreen "linking sclang startup file"
 rm -rf .config/SuperCollider/startup.scd
 ln -s "$(realpath dotfiles/sclang/startup.scd)" "$(realpath  .config/SuperCollider/)"
 
-dotgreen "linking sclang extensions"
-file_stuff::link_files_to_dir \
-  dotfiles/sclang/extensions \
-  .local/share/SuperCollider/Extensions/custom
+if which sclang > /dev/null; then
+  dotgreen "linking sclang extensions"
+  file_stuff::link_files_to_dir \
+    dotfiles/sclang/extensions \
+    .local/share/SuperCollider/Extensions/custom
 
-dotgreen "checking for SC3Plugins"
-if ! stat .local/share/SuperCollider/Extensions/SC3plugins > /dev/null 2>&1; then
-  dotred "SC3Plugins not found in .local/share/SuperCollider/Extensions/ get them at https://github.com/supercollider/sc3-plugins#installation"
+  dotgreen "checking for SC3Plugins"
+  if ! stat .local/share/SuperCollider/Extensions/SC3plugins > /dev/null 2>&1; then
+    dotred "SC3Plugins not found in .local/share/SuperCollider/Extensions/ get them at https://github.com/supercollider/sc3-plugins#installation"
+  fi
 fi
 
 dotgreen "Setting caps lock to control"
