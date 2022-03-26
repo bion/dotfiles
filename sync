@@ -38,11 +38,11 @@ dotgreen "linking .zshrc"
 rm -rf .zshrc
 ln -s dotfiles/.zshrc .zshrc
 
-dotgreen "linking sclang startup file"
-rm -rf .config/SuperCollider/startup.scd
-ln -s "$(realpath dotfiles/sclang/startup.scd)" "$(realpath  .config/SuperCollider/)"
-
 if which sclang > /dev/null; then
+  dotgreen "linking sclang startup file"
+  rm -rf .config/SuperCollider/startup.scd
+  ln -s "$(realpath dotfiles/sclang/startup.scd)" "$(realpath  .config/SuperCollider/)"
+
   dotgreen "linking sclang extensions"
   file_stuff::link_files_to_dir \
     dotfiles/sclang/extensions \
