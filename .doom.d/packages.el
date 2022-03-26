@@ -53,3 +53,4 @@
 (package! move-dup)
 (package! git-link)
 (package! multi-term)
+(package! processing-mode)

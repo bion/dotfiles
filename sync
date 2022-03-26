@@ -7,7 +7,7 @@ pushd ~ > /dev/null
 source dotfiles/bin/shared.sh
 
 dotgreen "installing packages"
-packages=(git jq jackd tesseract-ocr Imagemagick build-essential ffmpeg firefox zsh tmux sqlite3 ripgrep fd-find emacs-gtk supercollider-emacs)
+packages=(git curl jq jackd tesseract-ocr Imagemagick build-essential ffmpeg firefox zsh tmux sqlite3 ripgrep fd-find emacs-gtk supercollider-emacs)
 for package in "${packages[@]}"; do
   apt::install $package
 done
