@@ -7,13 +7,17 @@ pushd ~ > /dev/null
 source dotfiles/bin/shared.sh
 
 dotgreen "installing packages"
-packages=(git curl jq jackd tesseract-ocr Imagemagick build-essential ffmpeg firefox zsh tmux sqlite3 ripgrep fd-find emacs-gtk supercollider-emacs)
+packages=(git curl alacritty jq jackd tesseract-ocr Imagemagick build-essential ffmpeg firefox zsh tmux sqlite3 ripgrep fd-find emacs-gtk supercollider-emacs)
 for package in "${packages[@]}"; do
   apt::install $package
 done
 
 if [[ ! -f "${HOME}/.oh-my-zsh/oh-my-zsh.sh" ]]; then
   sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+if ! which nordvpn > /dev/null; then
+  sh <(curl -sSf https://downloads.nordcdn.com/apps/linux/install.sh)
 fi
 
 dotgreen "linking doom config"
