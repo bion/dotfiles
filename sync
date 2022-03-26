@@ -12,6 +12,10 @@ for package in "${packages[@]}"; do
   apt::install $package
 done
 
+if [[ ! -f "${HOME}/.oh-my-zsh.sh" ]]; then
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
 dotgreen "linking doom config"
 file_stuff::link_files_to_dir dotfiles/.doom.d .doom.d
 
@@ -32,7 +36,7 @@ ln -s dotfiles/.zshrc .zshrc
 
 dotgreen "linking sclang startup file"
 rm -rf .config/SuperCollider/startup.scd
-ln -s "$(realpath dotfiles/sclang/startup.scd)" "$(realpath .config/SuperCollider/)"
+ln -s "$(realpath dotfiles/sclang/startup.scd)" "$(realpath  .config/SuperCollider/)"
 
 dotgreen "linking sclang extensions"
 file_stuff::link_files_to_dir \
