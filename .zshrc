@@ -102,8 +102,6 @@ fi
 
 export PATH=$PATH:/home/bion/bin
 
-. $HOME/.asdf/completions/asdf.bash
-
 export PATH="${PATH}:/home/bion/src/apache-maven-3.8.4/bin"
 
 alias tf=terraform
