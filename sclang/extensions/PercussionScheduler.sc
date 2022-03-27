@@ -1,15 +1,12 @@
 PercussionSchedulerSample {
-	classvar server, <>defaultAmp = 0.25, <>defaultOutbus = 0;
-	var <path, <name, <>amp, <>schedulingOffset, <>outbus;
+	classvar <>defaultAmp = 0.25, <>defaultOutbus = 0;
+	var <path, <name, <>amp, <>schedulingOffset, <>outbus, <server, <nrt = false;
 	var <buffer, <ready = false;
+	var <duration, <sampleRate, <numFrames, <numChannels;
 
-	*initClass {
-		server = Server.default;
-	}
-
-	*new { |path, name, amp, schedulingOffset, outbus|
+	*new { |path, name, amp, schedulingOffset, outbus, server, nrt|
 		^super
-  		.newCopyArgs(path, name, amp, schedulingOffset, outbus)
+  		.newCopyArgs(path, name, amp, schedulingOffset, outbus, server, nrt)
   		.init;
 	}
 
@@ -32,6 +29,8 @@ PercussionSchedulerSample {
 	}
 
 	init {
+		server = server ? Server.default;
+
 		if (outbus.isNil) {
 			outbus = defaultOutbus;
 		};
@@ -45,46 +44,74 @@ PercussionSchedulerSample {
 		};
 		name = name.asSymbol;
 
-		buffer = Buffer.read(server, path, action: { ready = true; });
+		if (nrt, {
+			this.initNRT;
+		}, {
+			buffer = Buffer.read(server, path, action: { ready = true; });
+		});
+
 		^this;
+	}
+
+	initNRT {
+		var sf = SoundFile(path);
+
+		if (sf.openRead.not, {
+			Error("No soundfile found at" + path).throw;
+		});
+
+		numFrames = sf.numFrames;
+		sampleRate = sf.sampleRate;
+		numChannels = sf.numChannels;
+		duration = sf.duration;
+		sf.close;
+
+		buffer = server.bufferAllocator.alloc(numChannels);
+		ready = true;
 	}
 }
 
 PercussionScheduler {
-	classvar server;
-	var <busses;
+	var <busses, <server, <nrt;
+	var <tempo = 100;
   var <clock, <measures, playMetronome;
   var <samples, measures, measuresSeq;
 	var <percGroup;
+	classvar metronomeSD;
+	classvar playBufSD;
 
-  *new { |busses|
-    ^super.newCopyArgs(busses).init;
+  *new { |busses, server, nrt = false|
+		var serv = server ?? { Server.default };
+    ^super.newCopyArgs(busses, serv, nrt).init;
   }
 
 	*initClass {
-		server = Server.default;
-		server.waitForBoot({
-			SynthDef(\PercussionSchedulerMetronomeSineStereo, {
-				arg outbus, amp=0.2;
-				var out, env;
-				env = EnvGen.kr(Env.perc(0.001, 0.05, amp, -4), doneAction: Done.freeSelf);
-				out = SinOsc.ar(1800, 0, env);
-				Out.ar(outbus, out ! 2);
-			}).send(server);
+		Server.default.doWhenBooted({
+			metronomeSD.send(Server.default);
+			playBufSD.send(Server.default);
+		});
 
-			SynthDef(\PercussionSchedulerPlayBuf, {
-				|outbus, buf, amp=0.2|
-				var sig;
+		metronomeSD = SynthDef(\PercussionSchedulerMetronomeSineStereo, {
+			arg outbus, amp=0.2;
+			var out, env;
+			env = EnvGen.kr(Env.perc(0.001, 0.05, amp, -4), doneAction: Done.freeSelf);
+			out = SinOsc.ar(1800, 0, env);
+			Out.ar(outbus, out ! 2);
+		});
 
-				sig = PlayBuf.ar(1, buf, BufRateScale.ir(buf), doneAction: Done.freeSelf);
+		playBufSD = SynthDef(\PercussionSchedulerPlayBuf, {
+			|outbus, buf, amp=0.2|
+			var sig;
 
-				Out.ar(outbus, sig * amp);
-			}).send(server);
+			sig = PlayBuf.ar(1, buf, BufRateScale.ir(buf), doneAction: Done.freeSelf);
+
+			Out.ar(outbus, sig * amp);
 		});
 	}
 
   init {
 		clock = TempoClock.default;
+		this.setTempoBpm(tempo);
 		samples = IdentityDictionary();
 		busses = busses ? IdentityDictionary();
 
@@ -111,13 +138,56 @@ PercussionScheduler {
 		};
 
 		clock.sched(1, {
-			this.scheduleMeasure(measuresSeq.next);
+			this.makeMeasureBundles(
+				measuresSeq.next,
+				thisThread.clock.beatDur,
+				{ |timestamp, bundleList|
+					server.listSendBundle(timestamp, bundleList);
+				}
+			);
+
 			thisThread.clock.beatsPerBar;
 		});
   }
 
-  setTempoBpm { |tempo|
-		clock.tempo_(tempo / 60);
+	generateScore {
+		var barDur = clock.beatsPerBar * clock.beatDur;
+		var score = Score([
+			[0.0, [\d_recv, metronomeSD.asBytes]],
+			[0.0, [\d_recv, playBufSD.asBytes]]
+		]);
+		var currentTime = 0.0;
+
+		samples.values.do {	|sample|
+			score.add(
+				[0.0, [\b_allocRead, sample.buffer, sample.path, 0, 0]]
+			);
+		};
+
+		measures.do { |measure|
+			this.makeMeasureBundles(
+				measure,
+				clock.beatDur,
+				{ |timestamp, bundleList|
+					var scheduleTime = timestamp + currentTime;
+
+					bundleList.do { |oscMessage|
+						score.add([scheduleTime, oscMessage]);
+					};
+				}
+			);
+
+			currentTime = currentTime + barDur;
+		};
+
+		score.add([currentTime + 2, [0]]);
+
+		^score;
+	}
+
+  setTempoBpm { |newTempo|
+		tempo = newTempo;
+		clock.tempo_(newTempo / 60);
   }
 
   stop {
@@ -136,8 +206,7 @@ PercussionScheduler {
 		measures = measuresArg;
   }
 
-  scheduleMeasure { |measure|
-    var beatDur = thisThread.clock.beatDur;
+	makeMeasureBundles { |measure, beatDur, bundleCallback|
 		var bundleList = List();
 		var beat = nil;
 
@@ -152,10 +221,10 @@ PercussionScheduler {
 		measure.do({ |val|
 			switch(val.class,
 				Array, {
-					this.scheduleMeasure(val);
+					this.makeMeasureBundles(val, beatDur, bundleCallback);
 				},
 				Function, {
-					this.scheduleMeasure(val.value(beat));
+					this.makeMeasureBundles(val.value(beat), beatDur, bundleCallback);
 				},
 				Symbol, {
 					var sample = samples[val];
@@ -171,8 +240,8 @@ PercussionScheduler {
 					);
 				},
 				{
-					if (beat.notNil, {
-						server.listSendBundle(beatDur * beat, bundleList);
+					if (bundleList.isEmpty.not, {
+						bundleCallback.value(beatDur * beat, bundleList);
 						bundleList = List();
 					});
 
@@ -181,8 +250,8 @@ PercussionScheduler {
 			);
 		});
 
-		server.listSendBundle(beatDur * beat, bundleList);
-  }
+		bundleCallback.value(beatDur * beat, bundleList);
+	}
 
 	addSample { |sample|
 		samples.put(sample.name, sample);
@@ -214,7 +283,7 @@ PercussionScheduler {
 			var notLoaded = samples.keys.includes(name).not;
 
 			if (isAudioFile && notLoaded, {
-				sample = PercussionSchedulerSample(path, name);
+				sample = PercussionSchedulerSample(path, name, server: server, nrt: nrt);
 				samples.put(sample.name, sample);
 			});
 		};
@@ -242,7 +311,7 @@ PercussionScheduler {
 			Error("PercussionSchedulerSample must have a path:" + specDict.asString).throw;
 		};
 
-		sample = PercussionSchedulerSample(path, name.asSymbol, amp, schedulingOffset, outbus);
+		sample = PercussionSchedulerSample(path, name.asSymbol, amp, schedulingOffset, outbus, server, nrt);
 		samples.put(sample.name, sample);
 		^this;
 	}
