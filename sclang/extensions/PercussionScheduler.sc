@@ -13,31 +13,6 @@ PercussionSchedulerSample {
   		.init;
 	}
 
-	/*
-	 Expects a dictionary of the following form:
-		path: String
-		name?: defaults to path basename as a symbol
-		amp?: 0
-		schedulingOffset?: 0
-		outbus?: 0
-	*/
-	*fromYaml { |yamlPath|
-		var specDict = yamlPath.parseYAMLFile;
-		var path = specDict["path"];
-		var name = specDict["name"] ?? { this.sampleNameFromPath(path); };
-		var amp = specDict["amp"];
-		var outbus = specDict["outbus"];
-		var schedulingOffset = specDict["schedulingOffset"] ?? 0;
-
-		if (path.isNil) {
-			Error("PercussionSchedulerSample must have a path:" + specDict.asString).throw;
-		};
-
-		^super
-  		.newCopyArgs(path, name.asSymbol, amp, schedulingOffset, outbus)
-  		.init;
-	}
-
   *sampleNameFromPath { |path|
 		var basename = path.basename;
 		var parts = basename.split($.);
@@ -50,6 +25,11 @@ PercussionSchedulerSample {
 
 		^sampleName;
   }
+
+	printOn { |stream|
+		stream << "A PercussionSchedulerSample(name="
+		<< name << ", outbus=" << outbus << ")";
+	}
 
 	init {
 		if (outbus.isNil) {
@@ -72,11 +52,13 @@ PercussionSchedulerSample {
 
 PercussionScheduler {
 	classvar server;
+	var <busses;
   var <clock, <measures, playMetronome;
   var <samples, measures, measuresSeq;
+	var <percGroup;
 
-  *new {
-    ^super.new.init;
+  *new { |busses|
+    ^super.newCopyArgs(busses).init;
   }
 
 	*initClass {
@@ -91,12 +73,12 @@ PercussionScheduler {
 			}).send(server);
 
 			SynthDef(\PercussionSchedulerPlayBuf, {
-				|outbus, buf, amp=0.2, pan=0|
+				|outbus, buf, amp=0.2|
 				var sig;
 
 				sig = PlayBuf.ar(1, buf, BufRateScale.ir(buf), doneAction: Done.freeSelf);
 
-				Out.ar(outbus, Pan2.ar(sig * amp, pan));
+				Out.ar(outbus, sig * amp);
 			}).send(server);
 		});
 	}
@@ -104,6 +86,7 @@ PercussionScheduler {
   init {
 		clock = TempoClock.default;
 		samples = IdentityDictionary();
+		busses = busses ? IdentityDictionary();
 
 		^this;
   }
@@ -113,6 +96,7 @@ PercussionScheduler {
 			Error("Measures have not been set.").throw;
 		});
 
+		percGroup = Group(server);
 		measuresSeq = Pseq(measures, inf).asStream;
 
 		clock.beats = 2;
@@ -120,7 +104,9 @@ PercussionScheduler {
 		// nil plays ASAP
 		[nil, clock.beatDur].do { |bundleTimestamp|
 			server.makeBundle(bundleTimestamp, {
-				Synth(\PercussionSchedulerMetronomeSineStereo, [outbus: 0]);
+				Synth(\PercussionSchedulerMetronomeSineStereo,
+					[outbus: 0],
+					percGroup);
 			});
 		};
 
@@ -176,8 +162,8 @@ PercussionScheduler {
 
 					bundleList.add(
 						Synth
-						  .basicNew(\PercussionSchedulerPlayBuf)
-  						.newMsg(server, [
+						  .basicNew(\PercussionSchedulerPlayBuf, server)
+  						.newMsg(percGroup, [
   							outbus: sample.outbus,
   							buf: sample.buffer,
   							amp: sample.amp
@@ -204,21 +190,77 @@ PercussionScheduler {
 	}
 
   loadSamplesAtDir { |samplesDirPath|
-		samplesDirPath.pathMatch.do { |path|
+		var samplePaths;
+		var sample;
+
+		if (samplesDirPath.endsWith("/*"), {
+			samplePaths = samplesDirPath.pathMatch;
+		}, {
+			samplePaths = (samplesDirPath ++ "/*").pathMatch;
+		});
+
+		samplePaths.do { |path|
+			if (path.endsWith(".yml")) {
+				this.loadSampleFromYaml(path);
+			};
+		};
+
+		samplePaths.do { |path|
 			var basename = path.basename;
 			var parts = basename.split($.);
-			var bufName = parts.first;
-			var fileExt = parts[1];
-			var sample;
+			var name = parts.first.asSymbol;
+			var fileExt = parts.last;
+			var isAudioFile = (fileExt == "aiff") || (fileExt == "wav");
+			var notLoaded = samples.keys.includes(name).not;
 
-			if ((fileExt == "aiff").not && (fileExt == "wav").not, {
-				Error("Unable to load sample:" + path).throw;
+			if (isAudioFile && notLoaded, {
+				sample = PercussionSchedulerSample(path, name);
+				samples.put(sample.name, sample);
 			});
-
-			sample = PercussionSchedulerSample(path);
-			samples.put(sample.name, sample);
 		};
   }
+
+	/*
+	 Expects a dictionary of the following form:
+		path: String
+		name?: defaults to path basename as a symbol
+		amp?: 0
+		schedulingOffset?: 0
+		outbus?: 0
+	*/
+	loadSampleFromYaml { |yamlPath|
+		var specDict = yamlPath.parseYAMLFile;
+		var path = specDict["path"] ?? { yamlPath.replace(".yml", ".wav"); };
+		var name = specDict["name"] ?? { PercussionSchedulerSample.sampleNameFromPath(path); };
+		var amp = specDict["amp"];
+		var outbusName = specDict["outbus"];
+		var outbus = outbusName !? (this.findOrCreateBus(_)) ?? { 0 };
+		var schedulingOffset = specDict["schedulingOffset"] ?? 0;
+		var sample;
+
+		if (path.isNil) {
+			Error("PercussionSchedulerSample must have a path:" + specDict.asString).throw;
+		};
+
+		sample = PercussionSchedulerSample(path, name.asSymbol, amp, schedulingOffset, outbus);
+		samples.put(sample.name, sample);
+		^this;
+	}
+
+	findOrCreateBus { |busName|
+		var bus;
+
+		busName = busName.asSymbol;
+
+		if (busses.keys.includes(busName), {
+			bus = busses[busName];
+		}, {
+			bus = Bus.audio(server, 1);
+			busses.put(busName, bus);
+		});
+
+		^bus;
+	}
 
   printSamples {
 		samples.keys.asArray.sort.do { |bufferName|
