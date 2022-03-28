@@ -64,6 +64,8 @@
 (add-to-list 'auto-mode-alist '("\\.scd\\'" . sclang-mode))
 (add-to-list 'auto-mode-alist '("\\.sc\\'" . sclang-mode))
 
+(setq-default indent-tabs-mode nil)
+
 (defun endless/visit-pull-request-url ()
   "Visit the current branch's PR on Github."
   (interactive)
