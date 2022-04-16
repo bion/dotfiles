@@ -39,6 +39,8 @@ PercussionSchedulerSample {
       Error("Scheduling offset must be <= 0").throw;
     };
 
+    schedulingOffset = schedulingOffset.asFloat;
+
     if (outbus.isNil) {
       outbus = defaultOutbus;
     };
@@ -155,8 +157,8 @@ PercussionScheduler {
       this.makeMeasureBundles(
         measuresSeq.next,
         thisThread.clock.beatDur,
-        { |timestamp, bundleList|
-          server.listSendBundle(timestamp, bundleList);
+        { |timestamp, oscMessage|
+          server.sendBundle(timestamp, oscMessage);
         }
       );
 
@@ -186,12 +188,10 @@ PercussionScheduler {
       this.makeMeasureBundles(
         measure,
         clock.beatDur,
-        { |timestamp, bundleList|
+        { |timestamp, oscMessage|
           var scheduleTime = timestamp + currentTime;
 
-          bundleList.do { |oscMessage|
-            score.add([scheduleTime, oscMessage]);
-          };
+          score.add([scheduleTime, oscMessage]);
         }
       );
 
@@ -227,7 +227,6 @@ PercussionScheduler {
   }
 
   makeMeasureBundles { |measure, beatDur, bundleCallback|
-    var bundleList = List();
     var beat = nil;
 
     if (measure.isNil, {
@@ -248,29 +247,21 @@ PercussionScheduler {
         },
         Symbol, {
           var sample = samples[val];
-
-          bundleList.add(
-            Synth
+          var oscMessage = Synth
             .basicNew(\PercussionSchedulerPlayBuf, server)
             .newMsg(percGroup, [
               outbus: sample.outbus,
               buf: sample.buffer,
               amp: sample.amp
-            ])
-          );
+            ]);
+
+          bundleCallback.value(beatDur * beat + sample.schedulingOffset, oscMessage);
         },
         {
-          if (bundleList.isEmpty.not, {
-            bundleCallback.value(beatDur * beat, bundleList);
-            bundleList = List();
-          });
-
           beat = val;
         }
       );
     });
-
-    bundleCallback.value(beatDur * beat, bundleList);
   }
 
   addSample { |sample|
