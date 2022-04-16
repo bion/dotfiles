@@ -13,6 +13,7 @@ function file_stuff::link_files_to_dir() {
 
   for f in "${source_dir}"/*; do
     name="$(basename "$f")"
+    dotsay + linking "$(basename $f)" to "${target_dir}/${name}"
     ln -s "$f" "${target_dir}/${name}"
   done
 }

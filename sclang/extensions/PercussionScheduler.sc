@@ -6,8 +6,8 @@ PercussionSchedulerSample {
 
   *new { |path, name, amp, schedulingOffset, outbus, server, nrt|
     ^super
-      .newCopyArgs(path, name, amp, schedulingOffset, outbus, server, nrt)
-      .init;
+    .newCopyArgs(path, name, amp, schedulingOffset, outbus, server, nrt)
+    .init;
   }
 
   *sampleNameFromPath { |path|
@@ -30,6 +30,14 @@ PercussionSchedulerSample {
 
   init {
     server = server ? Server.default;
+
+    if (schedulingOffset.isNil) {
+      schedulingOffset = 0;
+    };
+
+    if (schedulingOffset > 0) {
+      Error("Scheduling offset must be <= 0").throw;
+    };
 
     if (outbus.isNil) {
       outbus = defaultOutbus;
@@ -110,7 +118,7 @@ PercussionScheduler {
   }
 
   init {
-    clock = TempoClock.default;
+    clock = TempoClock();
     this.setTempoBpm(tempo);
     samples = IdentityDictionary();
     busses = busses ? IdentityDictionary();
@@ -119,8 +127,14 @@ PercussionScheduler {
   }
 
   start {
+    if (nrt) {
+      "start doesn't work in NRT mode.".warn;
+      ^nil;
+    };
+
     if (measures.isNil, {
-      Error("Measures have not been set.").throw;
+      "Measures have not been set.".warn;
+      ^nil;
     });
 
     percGroup = Group(server);
@@ -156,7 +170,11 @@ PercussionScheduler {
       [0.0, [\d_recv, metronomeSD.asBytes]],
       [0.0, [\d_recv, playBufSD.asBytes]]
     ]);
-    var currentTime = 0.0;
+    var currentTime = barDur - clock.beatDur;
+
+    if (nrt.not, {
+      Error("Cannot generate score in realtime mode").throw;
+    });
 
     samples.values.do { |sample|
       score.add(
@@ -233,12 +251,12 @@ PercussionScheduler {
 
           bundleList.add(
             Synth
-              .basicNew(\PercussionSchedulerPlayBuf, server)
-              .newMsg(percGroup, [
-                outbus: sample.outbus,
-                buf: sample.buffer,
-                amp: sample.amp
-              ])
+            .basicNew(\PercussionSchedulerPlayBuf, server)
+            .newMsg(percGroup, [
+              outbus: sample.outbus,
+              buf: sample.buffer,
+              amp: sample.amp
+            ])
           );
         },
         {
@@ -292,7 +310,7 @@ PercussionScheduler {
   }
 
   /*
-   Expects a dictionary of the following form:
+    Expects a dictionary of the following form:
     path: String
     name?: defaults to path basename as a symbol
     amp?: 0
@@ -301,12 +319,21 @@ PercussionScheduler {
   */
   loadSampleFromYaml { |yamlPath|
     var specDict = yamlPath.parseYAMLFile;
-    var path = specDict["path"] ?? { yamlPath.replace(".yml", ".wav"); };
+    var path = specDict["path"] ?? {
+      var wavPath = yamlPath.replace(".yml", ".wav");
+      var aiffPath = yamlPath.replace(".yml", ".aiff");
+
+      if (File.exists(wavPath)) {
+        wavPath;
+      } {
+        aiffPath;
+      };
+    };
     var name = specDict["name"] ?? { PercussionSchedulerSample.sampleNameFromPath(path); };
     var amp = specDict["amp"];
     var outbusName = specDict["outbus"];
-    var outbus = outbusName !? (this.findOrCreateBus(_)) ?? { 0 };
-    var schedulingOffset = specDict["schedulingOffset"] ?? 0;
+    var outbus = outbusName !? (this.findOrCreateBus(_)) ?? { PercussionSchedulerSample.defaultOutbus; };
+    var schedulingOffset = specDict["offset"];
     var sample;
 
     if (path.isNil) {
