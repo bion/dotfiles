@@ -37,6 +37,11 @@
 
 (define-key key-translation-map "\C-j" "\C-x")
 
+(cond (IS-MAC
+       (setq mac-command-modifier      'meta
+             mac-option-modifier       'alt
+             mac-right-option-modifier 'alt)))
+
 (defun next-in-frame-window ()
   (interactive)
   (select-window (next-window)))
