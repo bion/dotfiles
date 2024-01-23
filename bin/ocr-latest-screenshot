@@ -10,6 +10,6 @@ else
     screenshot_dir=~/Desktop
 fi
 
-latest="$screenshot_dir/$(ls -Art $screenshot_dir | tail -n 1)"
+latest="$screenshot_dir/$(ls -Art $screenshot_dir | rg ".png" | tail -n 1)"
 
 extract-text "$latest"
